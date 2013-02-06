@@ -1,0 +1,32 @@
+{
+  "name": "until-stream",
+  "version": "0.0.0",
+  "description": "A through stream that stops piping when a signature is reached ",
+  "main": "until.js",
+  "scripts": {
+    "test": "./node_modules/.bin/tap ./test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EvanOxfeld/until-stream.git"
+  },
+  "keywords": [
+    "until",
+    "when",
+    "stream",
+    "pull"
+  ],
+  "author": "Evan Oxfeld <eoxfeld@gmail.com>",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "babb2bd6e42172fcbed4581049ae62ae6d68b3a6",
+  "devDependencies": {
+    "tap": "~0.4.0",
+    "stream-buffers": "~0.2.3"
+  },
+  "dependencies": {
+    "pullstream": "~0.1.0",
+    "over": "0.0.5",
+    "buffers": "~0.1.1"
+  }
+}
