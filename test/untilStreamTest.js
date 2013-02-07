@@ -19,11 +19,11 @@ test("pullUntil", function (t) {
 
   sourceStream.pipe(us);
 
-  us.pullUntil('World', function(err, data) {
+  us.pullUntil(' World', function(err, data) {
     if (err) {
       throw err;
     }
-    t.equal('Hello', str);
+    t.equal('Hello', data.toString());
     us.pull(function (err, data) {
       if (err) {
         throw err;
@@ -34,7 +34,42 @@ test("pullUntil", function (t) {
   });
 });
 
-/*test("source sending twelve bytes at once", function (t) {
+/*test("pipeUntil", function (t) {
+  t.plan(2);
+  var us = new UntilStream();
+  us.on('finish', function () {
+    sourceStream.destroy();
+  });
+
+  var sourceStream = new streamBuffers.ReadableStreamBuffer({
+    frequency: 0,
+    chunkSize: 1000
+  });
+  sourceStream.put("Hello World!");
+
+  var writableStream = new streamBuffers.WritableStreamBuffer({
+    initialSize: 100
+  });
+
+  writableStream.on('close', function () {
+    var str = writableStream.getContentsAsString('utf8');
+    t.equal('Hello', str);
+
+    us.pull(function (err, data) {
+      if (err) {
+        throw err;
+      }
+      t.equal('!', data.toString());
+      return t.end();
+    });
+  });
+
+  sourceStream.pipe(us).pipe(writableStream, { until: ' World'}).pipe(writableStream);
+});*/
+
+
+/*
+test("source sending twelve bytes at once", function (t) {
   t.plan(3);
   var ps = new UntilStream({ lowWaterMark : 0 });
   ps.on('finish', function () {
@@ -74,36 +109,3 @@ test("pullUntil", function (t) {
     ps.pipe(' World'.length, writableStream);
   });
 });*/
-
-test("pipeUntil", function (t) {
-  t.plan(2);
-  var us = new UntilStream();
-  us.on('finish', function () {
-    sourceStream.destroy();
-  });
-
-  var sourceStream = new streamBuffers.ReadableStreamBuffer({
-    frequency: 0,
-    chunkSize: 1000
-  });
-  sourceStream.put("Hello World!");
-
-  var writableStream = new streamBuffers.WritableStreamBuffer({
-    initialSize: 100
-  });
-
-  writableStream.on('close', function () {
-    var str = writableStream.getContentsAsString('utf8');
-    t.equal('Hello', str);
-
-    us.pull(function (err, data) {
-      if (err) {
-        throw err;
-      }
-      t.equal('!', data.toString());
-      return t.end();
-    });
-  });
-
-  sourceStream.pipe(us).pipeUntil(' World').pipe(writableStream);
-});
