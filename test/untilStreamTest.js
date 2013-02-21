@@ -30,16 +30,13 @@ test("read until pattern", function (t) {
 
 test("pipe until pattern", function (t) {
   t.plan(2);
-  var us = new UntilStream({ pattern: ' World'});
+  var us = new UntilStream({ pattern: 'jumps'});
   us.on('finish', function () {
     sourceStream.destroy();
   });
 
-  var sourceStream = new streamBuffers.ReadableStreamBuffer({
-    frequency: 0,
-    chunkSize: 1000
-  });
-  sourceStream.put("Hello World!");
+  var sourceStream = new streamBuffers.ReadableStreamBuffer({ chunkSize: 8 });
+  sourceStream.put("The quick brown fox jumps over the lazy dog");
 
   var writableStream = new streamBuffers.WritableStreamBuffer({
     initialSize: 100
@@ -47,9 +44,9 @@ test("pipe until pattern", function (t) {
 
   writableStream.on('close', function () {
     var str = writableStream.getContentsAsString('utf8');
-    t.equal(str, 'Hello');
+    t.equal(str, 'The quick brown fox ');
     var data = us.read();
-    t.equal(data.toString(), ' World!');
+    t.equal(data.toString().indexOf('jumps'), 0);
     t.end();
   });
 
@@ -73,7 +70,7 @@ test("pipe until pattern - pattern straddles two chunks", function (t) {
     initialSize: 100
   });
 
-  writableStream.on('close', function () {
+  writableStream.once('close', function () {
     var str = writableStream.getContentsAsString('utf8');
     t.equal(str, 'Hello');
     var data = us.read();
