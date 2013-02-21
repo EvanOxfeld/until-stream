@@ -61,11 +61,12 @@ Until.prototype.read = function (size) {
     if (index === -1 || (this._found && index === 0)) {
       this._found = false;
       //slice off pattern.length - 1 from the end in case the pattern straddles chunks
-      var offset = this._readableState.length ? output.length - this._opts.pattern.length + 1 : -1;
+      var offset = this._readableState.ended ? -1 : output.length - this._opts.pattern.length + 1;
       if (offset > 0) {
         this._buf = Buffers([output.slice(offset, output.length)]);
         output = output.slice(0, offset);
       } else {
+        this._buf = Buffers();
         output = output.toBuffer();
       }
 
