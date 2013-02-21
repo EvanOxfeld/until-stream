@@ -18,7 +18,10 @@ function Until(opts) {
 
   if (typeof opts.pattern === "string") {
     opts.pattern = new Buffer(opts.pattern);
+  } else if (!opts.pattern instanceof Buffer) {
+    throw new Error('Invalid pattern type')
   }
+
   this._opts = opts;
   this.unpiping = false;
 
