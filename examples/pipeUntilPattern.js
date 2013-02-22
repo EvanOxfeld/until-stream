@@ -16,10 +16,10 @@ sourceStream.pipe(us).pipe(writableStream);
 writableStream.once('close', function () {
   var str = writableStream.getContentsAsString('utf8'); //Hello
   console.log('Piped data before pattern occurs:', "'" + str + "'");
-  var data = us.read(); //data starts with pattern
-  console.log('Next call to read() starts with pattern:', "'" + data.toString() + "'");
+  var data = us.read(); // World
+  console.log('Next call to read() returns the pattern:', "'" + data.toString() + "'");
 });
 
 //Output
 //Piped data before pattern occurs: 'Hello'
-//Next call to read() starts with pattern: ' World!'
+//Next call to read() returns the pattern: ' World'
