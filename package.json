@@ -22,11 +22,10 @@
   "gitHead": "babb2bd6e42172fcbed4581049ae62ae6d68b3a6",
   "devDependencies": {
     "tap": "~0.4.0",
-    "stream-buffers": "~0.2.3"
+    "stream-buffers": "~0.2.4"
   },
   "dependencies": {
     "buffers": "~0.1.1",
-    "bufferjs": "~2.0.0",
     "readable-stream": "~0.3.0"
   }
 }
