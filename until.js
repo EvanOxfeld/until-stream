@@ -1,6 +1,8 @@
 'use strict';
 
 module.exports = Until;
+
+require("setimmediate");
 var PassThrough = require('stream').PassThrough;
 var inherits = require("util").inherits;
 var Buffers = require('buffers');
