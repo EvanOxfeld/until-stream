@@ -7,9 +7,14 @@ answer. Pipe Until-Stream and automatically stop when
 your pattern is reached or call read() until the returned
 data matches your pattern. 
 
-Stability - API is somewhat unstable. Currently
-Until-Stream supports piping to only a single destination
-stream.
+<pre>
+--------------------------------------
+|Stability - API is somewhat unstable|
+--------------------------------------
+</pre>
+read() and pipe() are implemented with some limitations.
+For example, Until-Stream supports piping to only a
+single destination stream.
 
 ## Installation
 
