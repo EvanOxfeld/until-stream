@@ -1,31 +1,6 @@
-'use strict';
-
 var test = require('tap').test;
 var streamBuffers = require("stream-buffers");
 var UntilStream = require('../');
-
-test("read until pattern", function (t) {
-  t.plan(3);
-  var us = new UntilStream({ pattern: ' World'});
-  us.on('finish', function () {
-    sourceStream.destroy();
-  });
-
-  var sourceStream = new streamBuffers.ReadableStreamBuffer();
-  sourceStream.put("Hello World!");
-
-  sourceStream.pipe(us);
-
-  us.once('readable', function() {
-    var data = us.read();
-    t.equal(data.toString(), 'Hello');
-    data = us.read();
-    t.equal(data.toString(), ' World');
-    data = us.read();
-    t.equal(data.toString(), '!');
-    t.end();
-  });
-});
 
 test("pipe until pattern", function (t) {
   t.plan(3);
@@ -34,7 +9,7 @@ test("pipe until pattern", function (t) {
     sourceStream.destroy();
   });
 
-  var sourceStream = new streamBuffers.ReadableStreamBuffer({ chunkSize: 8 });
+  var sourceStream = new streamBuffers.ReadableStreamBuffer();
   sourceStream.put("The quick brown fox jumps over the lazy dog");
 
   var writableStream = new streamBuffers.WritableStreamBuffer();
@@ -56,29 +31,9 @@ test("pipe until pattern", function (t) {
   sourceStream.pipe(us).pipe(writableStream);
 });
 
-test("if pattern not found, behave as a regular pipe", function(t) {
-  t.plan(1);
-  var us = new UntilStream({ pattern: 'jumps'});
-  us.on('finish', function () {
-    sourceStream.destroy();
-  });
-  var sourceStream = new streamBuffers.ReadableStreamBuffer();
-  sourceStream.put("Hello World!");
-
-  var writableStream = new streamBuffers.WritableStreamBuffer();
-
-  writableStream.on('close', function () {
-    var str = writableStream.getContentsAsString('utf8');
-    t.equal(str, 'Hello World!');
-    t.end();
-  });
-
-  sourceStream.pipe(us).pipe(writableStream);
-});
-
-test("pipe until pattern - pattern straddles two chunks", function (t) {
+test("pattern straddles two chunks", function (t) {
   t.plan(3);
-  var us = new UntilStream({ pattern: ' World'});
+  var us = new UntilStream({ pattern: 'World'});
   us.on('finish', function () {
     sourceStream.destroy();
   });
@@ -90,9 +45,9 @@ test("pipe until pattern - pattern straddles two chunks", function (t) {
 
   writableStream.on('close', function () {
     var str = writableStream.getContentsAsString('utf8');
-    t.equal(str, 'Hello');
+    t.equal(str, 'Hello ');
     var data = us.read();
-    t.equal(data.toString(), ' World');
+    t.equal(data.toString(), 'World');
     data = us.read();
     t.equal(data.toString(), '!');
     t.end();
@@ -101,27 +56,25 @@ test("pipe until pattern - pattern straddles two chunks", function (t) {
   sourceStream.pipe(us).pipe(writableStream, { chunkSize: 8 });
 });
 
-test("pipe until pattern - first chunk ends with potential pattern", function (t) {
-  t.plan(3);
-  var us = new UntilStream({ pattern: ' World'});
+test("first chunk ends with potential pattern", function (t) {
+  t.plan(2);
+  var us = new UntilStream({ pattern: 'World'});
   us.on('finish', function () {
     sourceStream.destroy();
   });
 
   var sourceStream = new streamBuffers.ReadableStreamBuffer();
-  sourceStream.put("Hello Wordy World!");
+  sourceStream.put("Hello Wordy World");
 
   var writableStream = new streamBuffers.WritableStreamBuffer();
 
   writableStream.on('close', function () {
     var str = writableStream.getContentsAsString('utf8');
-    t.equal(str, 'Hello Wordy');
+    t.equal(str, 'Hello Wordy ');
     var data = us.read();
-    t.equal(data.toString(), ' World');
-    data = us.read();
-    t.equal(data.toString(), '!');
+    t.equal(data.toString(), 'World');
     t.end();
   });
 
-  sourceStream.pipe(us).pipe(writableStream, { chunkSize: 8 });
+  sourceStream.pipe(us).pipe(writableStream, { chunkSize: 9 });
 });
