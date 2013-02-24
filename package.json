@@ -13,7 +13,10 @@
   "keywords": [
     "until",
     "when",
+    "split",
+    "pause",
     "stream",
+    "pipe",
     "pull"
   ],
   "author": "Evan Oxfeld <eoxfeld@gmail.com>",
