@@ -1,6 +1,6 @@
 {
   "name": "until-stream",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A PassThrough stream that stops piping when a pattern is reached ",
   "main": "until.js",
   "scripts": {
