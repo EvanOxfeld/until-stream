@@ -14,11 +14,14 @@ if (!PassThrough) {
 inherits(Until, PassThrough);
 
 function Until(opts) {
+  var opts = opts || {};
   //todo allow pattern to be set later
-  if (typeof opts.pattern === "string") {
-    opts.pattern = new Buffer(opts.pattern);
-  } else if (!opts.pattern instanceof Buffer) {
-    throw new Error('Invalid pattern type')
+  if (opts.pattern) {
+    if (typeof opts.pattern === "string") {
+      opts.pattern = new Buffer(opts.pattern);
+    } else if (!opts.pattern instanceof Buffer) {
+      throw new Error('Invalid pattern type')
+    }
   }
 
   this._opts = opts;
@@ -31,14 +34,18 @@ function Until(opts) {
 }
 
 Until.prototype.read = function (size) {
+  var rs = this._readableState;
+  var pattern = this._opts.pattern;
+  if (!pattern) {
+    return PassThrough.prototype.read.call(this, size);
+  }
+
   if (this.unpiping) {
     //either return null from read() until everything is unpiped
     //    or change flow() within readable-stream.pipe()
     return null;
   }
 
-  var rs = this._readableState;
-  var pattern = this._opts.pattern;
   var data;
   if (this._buf.indexOf(pattern) === 0  ||
       (data = PassThrough.prototype.read.call(this, size)) && this._buf.push(data)
@@ -83,9 +90,11 @@ Until.prototype.read = function (size) {
 };
 
 Until.prototype.pipe = function(dest, pipeOpts) {
-  pipeOpts = pipeOpts || {};
-  pipeOpts.end = pipeOpts.end || false;
-  return PassThrough.prototype.pipe.call(this, dest, pipeOpts)
+  if (this._opts.pattern) {
+    pipeOpts = pipeOpts || {};
+    pipeOpts.end = pipeOpts.end || false;
+  }
+  return PassThrough.prototype.pipe.call(this, dest, pipeOpts);
 };
 
 Until.prototype._flush = function(output, cb) {

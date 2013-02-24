@@ -2,9 +2,9 @@ var test = require('tap').test;
 var streamBuffers = require("stream-buffers");
 var UntilStream = require('../');
 
-test("if pattern not found, behave as a regular pipe", function(t) {
+test("if pattern option unset, behave as a PassThrough stream", function(t) {
   t.plan(1);
-  var us = new UntilStream({ pattern: 'jumps'});
+  var us = new UntilStream();
   us.on('finish', function () {
     sourceStream.destroy();
   });
