@@ -2,8 +2,8 @@ until-stream [![Build Status](https://travis-ci.org/EvanOxfeld/until-stream.png)
 ============
 
 Ever wanted to pause a stream when a certain String or
-a binary signature is reached? Until-Stream is the
-answer. Pipe Until-Stream and automatically stop when
+a binary signature is reached? UntilStream is the
+answer. Pipe UntilStream and automatically stop when
 your pattern is reached or call read() until the returned
 data matches your pattern, without excessively buffering
 your stream's content in memory.
@@ -14,7 +14,7 @@ your stream's content in memory.
 --------------------------------------
 </pre>
 read() and pipe() are implemented with some limitations.
-For example, Until-Stream supports piping to only a
+For example, UntilStream supports piping to only a
 single destination stream.
 
 ## Installation
@@ -66,7 +66,92 @@ us.on('readable', function() {
 });
 ```
 
+# API Index
+
+## UntilStream
+ * [new UntilStream([options])](#untilStreamConstructor)
+ * [read([size])](#untilStreamRead)
+ * [pipe(destination, [options])](#untilStreamPipe)
+
+UntilStream also includes stream.Readable and
+stream.Writable methods. See the node v0.9 [Stream documentation]
+(http://nodejs.org/docs/v0.9.10/api/stream.html) for more.
+
+# API Documentation
+
+<a name="untilStream"/>
+## UntilStream
+
+<a name="untilStreamConstructor" />
+### new UntilStream([options])
+
+__Arguments__
+
+* options (optional)
+    * pattern - String or Buffer If provided, UntilStream will
+                stop reads or pipes when reached
+
+<a name="untilStreamRead" />
+### us.read([size])
+
+Synchronously consume data from UntilStream's internal
+buffer. If the specified pattern is detected within the
+current chunk, slice off the portion prior to the pattern.
+The next call to read() will return exactly the pattern.
+Otherwise return the current chunk.
+
+__Arguments__
+
+* size (optional) - Mininum number of bytes to read. If not
+                    specified return the entire content of
+                    the internal buffer or up to the pattern
+
+__Return__
+
+Buffer | null
+
+__Example__
+
+```javascript
+var us = new UntilStream({ pattern: '\n' });
+
+us.write("Hello\nWorld");
+var hello = us.read();
+console.log(hello.toString('utf8'));
+var world = us.read();
+console.log(world.toString('utf8'));
+```
+
+<a name="untilStreamPipe" />
+### us.pipe(destination, [options])
+
+Pipe incoming data from UntilStream to the destination
+WriteStream. If the pattern is reached, leave the pattern
+on the internal buffer, disconnect the pipe, and call end()
+on the destination. Back-pressure is properly managed.
+
+__Arguments__
+
+* destination - The Stream to pipe data to
+* options (optional)
+    * end Boolean Default=false
+
+__Return__
+
+Stream - the destination stream
+
+__Example__
+
+```javascript
+var us = new UntilStream({ pattern: '\n' });
+var loremIpsumStream = fs.createReadStream('loremIpsum.txt');
+var outputStream = fs.createWriteStream(path.join(__dirname, 'loremIpsum.out'));
+
+loremIpsumStream.pipe(us).pipe(outputStream).on('close', function() {
+  console.log('single line of Lorem Ipsum written to disk');
+});
+```
+
 ## License
 
 MIT
-
