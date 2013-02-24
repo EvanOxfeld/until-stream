@@ -5,7 +5,8 @@ Ever wanted to pause a stream when a certain String or
 a binary signature is reached? Until-Stream is the
 answer. Pipe Until-Stream and automatically stop when
 your pattern is reached or call read() until the returned
-data matches your pattern. 
+data matches your pattern, without excessively buffering
+your stream's content in memory.
 
 <pre>
 --------------------------------------
