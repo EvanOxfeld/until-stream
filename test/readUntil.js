@@ -4,16 +4,8 @@ var UntilStream = require('../');
 
 test("read until pattern", function (t) {
   t.plan(2);
+
   var us = new UntilStream({ pattern: 'World'});
-  us.on('finish', function () {
-    sourceStream.destroy();
-  });
-
-  var sourceStream = new streamBuffers.ReadableStreamBuffer();
-  sourceStream.put("Hello World");
-
-  sourceStream.pipe(us);
-
   us.once('readable', function() {
     var data = us.read();
     t.equal(data.toString(), 'Hello ');
@@ -21,6 +13,7 @@ test("read until pattern", function (t) {
     t.equal(data.toString(), 'World');
     t.end();
   });
+  us.write("Hello World");
 });
 
 test("multiple reads from after source stream has ended", function(t) {
