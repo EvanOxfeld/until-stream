@@ -13,18 +13,10 @@ if (!PassThrough) {
 
 inherits(Until, PassThrough);
 
-function Until(opts) {
-  var opts = opts || {};
-  //todo allow pattern to be set later
-  if (opts.pattern) {
-    if (typeof opts.pattern === "string") {
-      opts.pattern = new Buffer(opts.pattern);
-    } else if (!opts.pattern instanceof Buffer) {
-      throw new Error('Invalid pattern type')
-    }
-  }
 
-  this._opts = opts;
+function Until(opts) {
+  this._opts = opts || {};
+  this.setPattern(this._opts.pattern);
   this._buf = Buffers();
   this._flushing = false;
   this.unpiping = false;
@@ -110,6 +102,17 @@ Until.prototype._flush = function(output, cb) {
   endPipes.call(this);
   process.nextTick(cb);
 }
+
+Until.prototype.setPattern = function (pattern) {
+  if (pattern) {
+    if (typeof pattern === "string") {
+      pattern = new Buffer(pattern);
+    } else if (!pattern instanceof Buffer) {
+      throw new Error('Invalid pattern type')
+    }
+    this._opts.pattern = pattern;
+  }
+};
 
 function writePipes(data) {
   var rs = this._readableState;
