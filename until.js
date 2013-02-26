@@ -28,6 +28,20 @@ Until.prototype.read = function (size) {
   var rs = this._readableState;
   var pattern = this._opts.pattern;
   if (!pattern) {
+    if (this._buf.length) {
+      if (this._buf.length >= size) {
+        var output = this._buf.slice(0, size);
+        this._buf = Buffers([this._buf.slice(size)]);
+        return output;
+      } else {
+        var data = PassThrough.prototype.read.call(this, size ?
+                                                   size - this._buf.length : size);
+        if (data) this._buf.push(data);
+        var output = this._buf.toBuffer();
+        this._buf = Buffers();
+        return output;
+      }
+    }
     return PassThrough.prototype.read.call(this, size);
   }
 

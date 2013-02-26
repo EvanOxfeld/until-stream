@@ -51,3 +51,15 @@ test("remove pattern after the fact", function (t) {
 
   sourceStream.pipe(us);
 });
+
+test("read from US after removing pattern", function (t) {
+  t.plan(3);
+  var us = new UntilStream({ pattern: '\n' });
+  us.write("Hello\nWorld");
+
+  t.equal(us.read().toString(), 'Hello');
+  t.equal(us.read().toString(), '\n');
+  us.reconfigure();
+  t.equal(us.read().toString(), 'World');
+  t.end();
+});
