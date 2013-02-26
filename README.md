@@ -72,6 +72,7 @@ us.on('readable', function() {
  * [new UntilStream([options])](#untilStreamConstructor)
  * [read([size])](#untilStreamRead)
  * [pipe(destination, [options])](#untilStreamPipe)
+ * [reconfigure([options])](#untilStreamReconfigure)
 
 UntilStream also includes stream.Readable and
 stream.Writable methods. See the node v0.9 [Stream documentation]
@@ -151,6 +152,32 @@ var outputStream = fs.createWriteStream(path.join(__dirname, 'loremIpsum.out'));
 loremIpsumStream.pipe(us).pipe(outputStream).on('close', function() {
   console.log('single line of Lorem Ipsum written to disk');
 });
+```
+
+<a name="untilStreamReconfigure" />
+### us.reconfigure([options])
+
+Reconfigure the pattern option. It's unwise to call this method
+while piping to a destination stream.
+
+__Arguments__
+
+* options (optional)
+    * pattern - String or Buffer If provided, UntilStream will
+                stop reads or pipes when reached
+
+__Example__
+
+```javascript
+var us = new UntilStream();
+
+us.write("Hello\nWorld");
+us.reconfigure({ pattern: '\n' });
+var hello = us.read();
+console.log(hello.toString('utf8'));
+us.read(); //matches '\n' pattern!
+var world = us.read();
+console.log(world.toString('utf8'));
 ```
 
 ## License

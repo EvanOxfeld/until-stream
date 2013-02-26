@@ -15,8 +15,7 @@ inherits(Until, PassThrough);
 
 
 function Until(opts) {
-  this._opts = opts || {};
-  this.setPattern(this._opts.pattern);
+  this.reconfigure(opts);
   this._buf = Buffers();
   this._flushing = false;
   this.unpiping = false;
@@ -103,15 +102,18 @@ Until.prototype._flush = function(output, cb) {
   process.nextTick(cb);
 }
 
-Until.prototype.setPattern = function (pattern) {
+Until.prototype.reconfigure = function (opts) {
+  opts = opts || {};
+  var pattern = opts && opts.pattern ? opts.pattern : null;
   if (pattern) {
     if (typeof pattern === "string") {
       pattern = new Buffer(pattern);
     } else if (!pattern instanceof Buffer) {
       throw new Error('Invalid pattern type')
     }
-    this._opts.pattern = pattern;
   }
+  this._opts = this._opts || opts;
+  this._opts.pattern = pattern;
 };
 
 function writePipes(data) {
