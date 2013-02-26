@@ -118,6 +118,7 @@ var us = new UntilStream({ pattern: '\n' });
 us.write("Hello\nWorld");
 var hello = us.read();
 console.log(hello.toString('utf8'));
+us.read(); //matches '\n' pattern!
 var world = us.read();
 console.log(world.toString('utf8'));
 ```
