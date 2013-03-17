@@ -31,31 +31,6 @@ test("pipe until pattern", function (t) {
   sourceStream.pipe(us).pipe(writableStream);
 });
 
-test("pattern straddles two chunks", function (t) {
-  t.plan(3);
-  var us = new UntilStream({ pattern: 'World'});
-  us.on('finish', function () {
-    sourceStream.destroy();
-  });
-
-  var sourceStream = new streamBuffers.ReadableStreamBuffer();
-  sourceStream.put("Hello World!");
-
-  var writableStream = new streamBuffers.WritableStreamBuffer();
-
-  writableStream.on('close', function () {
-    var str = writableStream.getContentsAsString('utf8');
-    t.equal(str, 'Hello ');
-    var data = us.read();
-    t.equal(data.toString(), 'World');
-    data = us.read();
-    t.equal(data.toString(), '!');
-    t.end();
-  });
-
-  sourceStream.pipe(us).pipe(writableStream, { chunkSize: 8 });
-});
-
 test("first chunk ends with potential pattern", function (t) {
   t.plan(2);
   var us = new UntilStream({ pattern: 'World'});

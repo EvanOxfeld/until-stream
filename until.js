@@ -102,7 +102,7 @@ Until.prototype.pipe = function(dest, pipeOpts) {
   return PassThrough.prototype.pipe.call(this, dest, pipeOpts);
 };
 
-Until.prototype._flush = function(output, cb) {
+Until.prototype._flush = function(cb) {
   this._flushing = true;
   var rs = this._readableState;
   if (rs.length || this._buf.length) {
@@ -110,7 +110,7 @@ Until.prototype._flush = function(output, cb) {
       writePipes.call(this, this.read());
     }
     //allow for I/O
-    return setImmediate(this._flush.bind(this, output, cb));
+    return setImmediate(this._flush.bind(this, cb));
   }
   endPipes.call(this);
   process.nextTick(cb);
